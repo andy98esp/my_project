@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: infrastructure/Dockerfile
+      target: develop
+    volumes:
+      - ../application:/sites/app/application
+    ports:
+      - "8000:8000"
