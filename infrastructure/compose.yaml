@@ -6,6 +6,8 @@ services:
       context: ..
       dockerfile: infrastructure/Dockerfile
       target: develop
+    image: "andy_backend"
+    container_name: "andy_backend"
     volumes:
       - ../application:/sites/app/application
     ports:
