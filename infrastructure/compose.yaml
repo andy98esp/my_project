@@ -6,9 +6,33 @@ services:
       context: ..
       dockerfile: infrastructure/Dockerfile
       target: develop
-    image: "andy_backend"
-    container_name: "andy_backend"
+    image: andy_backend
+    container_name: andy_backend
     volumes:
       - ../application:/sites/app/application
     ports:
       - "8000:8000"
+
+  jenkins:
+    image: jenkins/jenkins:jdk17
+    container_name: jenkins
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - ../application:/sites/app/application
+      - ../Jenkinsfile:/var/jenkins_home/Jenkinsfile
+    networks:
+      - jenkins-net
+    environment:
+      - JENKINS_OPTS="--prefix=/"
+    ports:
+      - "8080:8080"
+      - "50000:50000" 
+    depends_on:
+      - backend
+
+
+networks:
+  jenkins-net:
+
+volumes:
+  jenkins_home:

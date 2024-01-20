@@ -13,6 +13,7 @@ WORKDIR ${APP_HOME}
 COPY application ${APP_HOME}/application
 COPY infrastructure ${APP_HOME}/infrastructure
 
+RUN pip3 install --upgrade sentry-sdk
 RUN python3.11 -m pip install --user --no-cache-dir -r ${APP_HOME}/infrastructure/requirements/requirements.txt
 
 RUN chmod +x ${APP_HOME}/infrastructure/bin/*

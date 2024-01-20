@@ -1,3 +1,6 @@
+from application import init_sentry
+init_sentry()
+
 from fastapi import FastAPI
 
 app = FastAPI()
