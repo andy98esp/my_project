@@ -8,4 +8,4 @@ app = FastAPI()
 
 @app.get("/")
 async def read_root():
-    return {"Hello": "World"}
+    return {"Jenkins": "Push trigger only"}
