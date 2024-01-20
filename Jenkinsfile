@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent push
 
     stages {
         stage('Print Workspace') {
