@@ -8,6 +8,8 @@ services:
       target: develop
     image: andy_backend
     container_name: andy_backend
+    env_file:
+      - ./env/dev.env
     volumes:
       - ../application:/sites/app/application
     ports:

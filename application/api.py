@@ -3,10 +3,20 @@ init_sentry()
 
 from enum import Enum
 
-from fastapi import FastAPI
-from pydantic import BaseModel, validator
+from fastapi import FastAPI, Request
+
+from pydantic import BaseModel
+from typing import Dict, List, Tuple
 
 app = FastAPI()
+
+import application.db as db
+
+from application.db.tables import Product
+
+from sqlalchemy.orm import sessionmaker
+Session = sessionmaker(bind=db.engine)
+session = Session()
 
 
 class ModelName(str, Enum):
@@ -45,13 +55,31 @@ class Item(BaseModel):
     name: str
     price: float
 
-    @validator("price")
-    def price_must_be_positive(cls, value):
-        if value <= 0:
-            raise ValueError(f"we expect price >= 0, we received {value}")
-        return value
-
 
 @app.post("/post_example/")
 async def example_post(item: Item):
     return {"message": f"validator passed for item = {item}"}
+
+
+class ProductBase(BaseModel):
+    name: str
+    price: float
+
+
+@app.post("/create_product/")
+async def create_product(request: Request, product_base: ProductBase):
+    payload = await request.json()
+    product_created = Product(name=payload['name'], price=payload['price'])
+    session.add(product_created)
+    session.commit()
+    print(product_created.id)
+    print(session.query(Product).filter_by(name='leche'))
+    print(session.query(Product).filter_by(price=2).all())
+    print(session.query(Product).filter(Product.price > 1).all())
+    print(session.query(Product).get(1).price)
+    product_to_update = session.query(Product).filter_by(id=1).first()
+    product_to_update.price = 3
+    session.commit()
+    session.query(Product).filter_by(name='leche').update({'name': 'queso'})
+    session.commit()
+    return {"message": "Worked!"}
