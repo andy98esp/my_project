@@ -5,6 +5,8 @@ uvicorn==0.26.0
 pandas==2.1.4
 numpy==1.26.3
 redis==5.0.1
+elasticsearch-dsl==8.12.0
+SQLAlchemy==2.0.25
 # tensorflow==2.15.0.post1
 # keras==2.15.0
 # torch==2.1.2
