@@ -13,11 +13,11 @@ services:
     ports:
       - "8000:8000"
 
-  andy-db:
-    image: postgres:16.1
+  db:
+    image: postgres:15.1
     container_name: postgres
     env_file:
-      - ../infrastructure/env/dev.env
+      - ./env/dev.env
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
