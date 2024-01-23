@@ -13,95 +13,108 @@ services:
     ports:
       - "8000:8000"
 
-  jenkins:
-    image: jenkins/jenkins:jdk17
-    container_name: jenkins
+  andy-db:
+    image: postgres:16.1
+    container_name: postgres
+    env_file:
+      - ../infrastructure/env/dev.env
     volumes:
-      - jenkins_home:/var/jenkins_home
-      - ../application:/sites/app/application
-      - ../Jenkinsfile:/var/jenkins_home/Jenkinsfile
-    environment:
-      - JENKINS_OPTS="--prefix=/"
+      - postgres_data:/var/lib/postgresql/data
     ports:
-      - "8080:8080"
-      - "50000:50000"
-    networks:
-      - jenkins-net
+      - "50000:5432"
     depends_on:
       - backend
 
-  redis:
-    image: redis:6.2
-    container_name: redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - ../application:/sites/app/application
-    depends_on:
-      - backend
+#  jenkins:
+#    image: jenkins/jenkins:jdk17
+#    container_name: jenkins
+#    volumes:
+#      - jenkins_home:/var/jenkins_home
+#      - ../application:/sites/app/application
+#      - ../Jenkinsfile:/var/jenkins_home/Jenkinsfile
+#    environment:
+#      - JENKINS_OPTS="--prefix=/"
+#    ports:
+#      - "8080:8080"
+#      - "50000:50000"
+#    networks:
+#      - jenkins-net
+#    depends_on:
+#      - backend
+#
+#  redis:
+#    image: redis:6.2
+#    container_name: redis
+#    ports:
+#      - "6379:6379"
+#    volumes:
+#      - ../application:/sites/app/application
+#    depends_on:
+#      - backend
+#
+#  elasticsearch:
+#    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+#    container_name: elasticsearch
+#    volumes:
+#      - es-data:/usr/share/elasticsearch/data
+#    environment:
+#      - node.name=elasticsearch
+#      - cluster.name=es-docker-cluster
+#      - discovery.type=single-node
+#      - bootstrap.memory_lock=true
+#      - xpack.security.enabled=false
+#      - xpack.security.audit.enabled:false
+#    ports:
+#      - "9200:9200"
+#      - "9300:9300"
+#    networks:
+#      - elastic
+#    depends_on:
+#      - backend
+#
+#  kibana:
+#    image: docker.elastic.co/kibana/kibana:8.12.0
+#    container_name: kibana
+#    environment:
+#      - node.name=kib8
+#      - cluster.name=es-docker-cluster
+#      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+#    ports:
+#      - "5601:5601"
+#    networks:
+#      - elastic
+#    depends_on:
+#      - backend
+#      - elasticsearch
+#
+#  logstash:
+#    image: docker.elastic.co/logstash/logstash:8.12.0
+#    container_name: logstash
+#    volumes:
+#      - ../logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+#    environment:
+#      - NODE_NAME=logstash
+#      - xpack.monitoring.enabled=true
+#      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+#    command: logstash -f /usr/share/logstash/pipeline/logstash.conf
+#    ports:
+#      - "5044:5044"
+#    networks:
+#      - elastic
+#    depends_on:
+#      - backend
+#      - elasticsearch
+#      - kibana
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
-    container_name: elasticsearch
-    volumes:
-      - es-data:/usr/share/elasticsearch/data
-    environment:
-      - node.name=elasticsearch
-      - cluster.name=es-docker-cluster
-      - discovery.type=single-node
-      - bootstrap.memory_lock=true
-      - xpack.security.enabled=false
-      - xpack.security.audit.enabled:false
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    networks:
-      - elastic
-    depends_on:
-      - backend
 
-  kibana:
-    image: docker.elastic.co/kibana/kibana:8.12.0
-    container_name: kibana
-    environment:
-      - node.name=kib8
-      - cluster.name=es-docker-cluster
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-    ports:
-      - "5601:5601"
-    networks:
-      - elastic
-    depends_on:
-      - backend
-      - elasticsearch
-
-  logstash:
-    image: docker.elastic.co/logstash/logstash:8.12.0
-    container_name: logstash
-    volumes:
-      - ../logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-    environment:
-      - NODE_NAME=logstash
-      - xpack.monitoring.enabled=true
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-    command: logstash -f /usr/share/logstash/pipeline/logstash.conf
-    ports:
-      - "5044:5044"
-    networks:
-      - elastic
-    depends_on:
-      - backend
-      - elasticsearch
-      - kibana
-
-
-networks:
-  jenkins-net:
-  elastic:
-    driver: bridge
-
+#networks:
+#  jenkins-net:
+#  elastic:
+#    driver: bridge
+#
 volumes:
-  jenkins_home:
-  es-data:
-    driver: local
-  logstash_data:
+  postgres_data:
+#  jenkins_home:
+#  es-data:
+#    driver: local
+#  logstash_data:
