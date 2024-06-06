@@ -8,7 +8,7 @@ on:
     branches:
       - main
 jobs:
-  initial_config:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
