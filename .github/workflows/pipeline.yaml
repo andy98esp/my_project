@@ -24,4 +24,4 @@ jobs:
         run : docker-compose -f infrastructure/compose.yaml up -d --build
 
       - name: Execute python file
-        run: docker-compose exec -T backend python3 application/test_pipeline.py
+        run: docker-compose -f infrastructure/compose.yaml exec -T backend python3 application/test_pipeline.py
