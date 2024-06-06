@@ -54,40 +54,40 @@ services:
 #    depends_on:
 #      - backend
 #
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
-    container_name: elasticsearch
-    environment:
-      - node.name=elasticsearch
-      - cluster.name=es-docker-cluster
-      - discovery.type=single-node
-      - bootstrap.memory_lock=true
-      - xpack.security.enabled=false
-      - xpack.security.audit.enabled:false
-    volumes:
-      - es-data:/usr/share/elasticsearch/data
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    networks:
-      - elastic
-    depends_on:
-      - backend
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:8.12.0
-    container_name: kibana
-    environment:
-      - node.name=kib8
-      - cluster.name=es-docker-cluster
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-    ports:
-      - "5601:5601"
-    networks:
-      - elastic
-    depends_on:
-      - backend
-      - elasticsearch
+#  elasticsearch:
+#    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+#    container_name: elasticsearch
+#    environment:
+#      - node.name=elasticsearch
+#      - cluster.name=es-docker-cluster
+#      - discovery.type=single-node
+#      - bootstrap.memory_lock=true
+#      - xpack.security.enabled=false
+#      - xpack.security.audit.enabled:false
+#    volumes:
+#      - es-data:/usr/share/elasticsearch/data
+#    ports:
+#      - "9200:9200"
+#      - "9300:9300"
+#    networks:
+#      - elastic
+#    depends_on:
+#      - backend
+#
+#  kibana:
+#    image: docker.elastic.co/kibana/kibana:8.12.0
+#    container_name: kibana
+#    environment:
+#      - node.name=kib8
+#      - cluster.name=es-docker-cluster
+#      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+#    ports:
+#      - "5601:5601"
+#    networks:
+#      - elastic
+#    depends_on:
+#      - backend
+#      - elasticsearch
 
 #  logstash:
 #    image: docker.elastic.co/logstash/logstash:8.12.0
@@ -120,15 +120,15 @@ services:
       - "15672:15672"
 
 
-networks:
+#networks:
 #  jenkins-net:
-  elastic:
+#  elastic:
 #    driver: bridge
 #
 volumes:
   postgres_data:
 #  jenkins_home:
-  es-data:
-    driver: local
+#  es-data:
+#    driver: local
 #  logstash_data:
   rabbitmq_data:

@@ -1,0 +1,35 @@
+name: Pipeline CI/CD test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  initial_config:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Create env directory
+        run: mkdir infrastructure/env
+
+
+      - name: Create and fill the env file
+        run: echo "${{ secrets.ENV_FILE }}" > infrastructure/env/dev.env
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build docker images
+        run : docker-compose -f infrastructure/compose.yaml up -d --build
+
+  execute:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute python file
+        run: docker-compose exec -T backend python3 application/test_pipeline.py
+
