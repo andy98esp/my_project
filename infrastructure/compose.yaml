@@ -7,6 +7,7 @@ services:
       dockerfile: infrastructure/Dockerfile
       target: develop
     image: andy_backend
+    command: uvicorn application.api:app --host 0.0.0.0 --port 8000 --reload
     container_name: andy_backend
     env_file:
       - ./env/dev.env
@@ -17,7 +18,7 @@ services:
 
   db:
     image: postgres:15.1
-    container_name: postgres
+    container_name: andy_postgres
     env_file:
       - ./env/dev.env
     volumes:
@@ -25,7 +26,8 @@ services:
     ports:
       - "50000:5432"
     depends_on:
-      - backend
+      backend:
+        condition: service_started
 
 #  jenkins:
 #    image: jenkins/jenkins:jdk17
@@ -109,8 +111,8 @@ services:
 #      - kibana
 
   rabbitmq:
-    image: rabbitmq:3.9
-    container_name: rabbitmq
+    image: rabbitmq:3.10.25-management
+    container_name: andy_rabbitmq
     env_file:
       - ./env/dev.env
     volumes:
@@ -118,6 +120,71 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    depends_on:
+      backend:
+        condition: service_started
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  redis:
+    image: redis:7.0-alpine
+    depends_on:
+      - backend
+      - db
+    container_name: andy_redis
+    ports:
+      - "6379:6379"
+
+  celery_worker:
+    build:
+      context: ..
+      dockerfile: infrastructure/Dockerfile
+      target: develop
+    image: andy_celery_worker
+    command: > 
+      sh -c '/sites/app/infrastructure/bin/docker-entrypoint.sh rabbitmq 5672 -- celery -A application.celery_app worker --logfile=/sites/app/application/logs/celery.log --autoscale=8,1 -E -O fair -Q celery,tasks-queue --pidfile='
+    depends_on:
+      backend:
+        condition: service_started
+      db:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      redis:
+        condition: service_started
+    container_name: andy_celery_worker
+    env_file:
+      - ./env/dev.env
+    volumes:
+      - ../application:/sites/app/application
+
+  celery_beat:
+      build:
+        context: ..
+        dockerfile: infrastructure/Dockerfile
+        target: develop
+      image: andy_celery_beat
+      command: > 
+        sh -c '/sites/app/infrastructure/bin/docker-entrypoint.sh rabbitmq 5672 -- celery -A application.celery_app beat --logfile=/sites/app/application/logs/celery.log --pidfile='
+      depends_on:
+        backend:
+          condition: service_started
+        db:
+          condition: service_started
+        celery_worker:
+          condition: service_started
+        rabbitmq:
+          condition: service_started
+        redis:
+          condition: service_started
+      container_name: andy_celery_beat
+      env_file:
+        - ./env/dev.env
+      volumes:
+        - ../application:/sites/app/application
 
 
 #networks:
